@@ -4,7 +4,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import Shared.User;
 public class Server {
-    // Predefined users for authentication
+
     private static final User[] users = {
             new User("user1", "1234"),
             new User("user2", "1234"),
@@ -13,17 +13,25 @@ public class Server {
             new User("user5", "1234"),
     };
 
-    // List of currently connected clients
+
     public static ArrayList<ClientHandler> clients = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
-        // TODO: Create a ServerSocket listening on a port (e.g., 12345)
+        try {
+            ServerSocket serverSocket = new ServerSocket(12345);
+            System.out.println("Server started");
+            while (true) {
+                Socket socket = serverSocket.accept();
+                System.out.println("new client connected");
 
-        // TODO: Accept incoming client connections in a loop
-        //       For each connection:
-        //       - Create a new ClientHandler object
-        //       - Add it to the 'clients' list
-        //       - Start a new thread to handle communication
+                ClientHandler clientHandler = new ClientHandler(socket);
+                clients.add(clientHandler);
+                new Thread(clientHandler).start();
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static boolean authenticate(String username, String password) {
